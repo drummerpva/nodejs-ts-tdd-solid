@@ -1,7 +1,7 @@
 import { SignUpController } from './signup'
 import faker from 'faker'
 import { MissingParamError, InvalidParamError, ServerError } from '../errors'
-import { EmailValidator } from '../protocols/email-validator'
+import { EmailValidator } from '../protocols'
 
 type SutType = {
   sut: SignUpController
