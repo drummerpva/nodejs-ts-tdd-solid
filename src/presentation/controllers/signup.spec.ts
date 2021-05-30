@@ -3,6 +3,7 @@ import faker from 'faker'
 import { MissingParamError } from '../errors/missing-param-error'
 import { InvalidParamError } from '../errors/invalid-param-error'
 import { EmailValidator } from '../protocols/email-validator'
+import { ServerError } from '../errors/server-error'
 
 type SutType = {
   sut: SignUpController
@@ -119,5 +120,21 @@ describe('SignUp Controller', () => {
     }
     sut.handle(httpRequest)
     expect(isValidSpy).toHaveBeenCalledWith(mailFake)
+  })
+  test('Should return 500 if EmailValidor throws', () => {
+    const { sut, emailValidatorStub } = makeSut()
+    jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => { throw new Error() })
+    const passFake = faker.internet.password
+    const httpRequest = {
+      body: {
+        name: faker.name.findName,
+        email: faker.internet.email,
+        password: passFake,
+        passwordConfirmation: passFake
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse?.statusCode).toBe(500)
+    expect(httpResponse?.body).toEqual(new ServerError())
   })
 })
