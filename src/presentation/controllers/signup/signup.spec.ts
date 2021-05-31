@@ -141,11 +141,11 @@ describe('SignUp Controller', () => {
   test('Should return 500 if EmailValidor throws', () => {
     const { sut, emailValidatorStub } = makeSut()
     jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => { throw new Error() })
-    const passFake = faker.internet.password
+    const passFake = faker.internet.password()
     const httpRequest = {
       body: {
-        name: faker.name.findName,
-        email: faker.internet.email,
+        name: faker.name.findName(),
+        email: faker.internet.email(),
         password: passFake,
         passwordConfirmation: passFake
       }
@@ -174,5 +174,21 @@ describe('SignUp Controller', () => {
       email: mailFake,
       password: passFake
     })
+  })
+  test('Should return 500 if EmailValidor throws', () => {
+    const { sut, addAccountStub } = makeSut()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => { throw new Error() })
+    const passFake = faker.internet.password()
+    const httpRequest = {
+      body: {
+        name: faker.name.findName(),
+        email: faker.internet.email(),
+        password: passFake,
+        passwordConfirmation: passFake
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse?.statusCode).toBe(500)
+    expect(httpResponse?.body).toEqual(new ServerError())
   })
 })
