@@ -16,16 +16,15 @@ const makeEmailValidator = (): EmailValidator => {
   }
   return new EmailValidatorStub()
 }
+const makeFakeAccount: AccountModel = {
+  id: faker.datatype.uuid(),
+  name: faker.name.findName(),
+  email: faker.internet.email()
+}
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
     add (account: AddAccountModel): AccountModel {
-      const accountFake = {
-        id: faker.datatype.uuid(),
-        name: faker.name.findName(),
-        email: faker.internet.email(),
-        password: faker.internet.password()
-      }
-      return accountFake
+      return makeFakeAccount
     }
   }
   return new AddAccountStub()
@@ -175,7 +174,7 @@ describe('SignUp Controller', () => {
       password: passFake
     })
   })
-  test('Should return 500 if EmailValidor throws', () => {
+  test('Should return 500 if AddAccount throws', () => {
     const { sut, addAccountStub } = makeSut()
     jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => { throw new Error() })
     const passFake = faker.internet.password()
@@ -190,5 +189,22 @@ describe('SignUp Controller', () => {
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse?.statusCode).toBe(500)
     expect(httpResponse?.body).toEqual(new ServerError())
+  })
+  test('Should return 200 if valid data is provided', () => {
+    const { sut } = makeSut()
+    const passFake = faker.internet.password()
+    const nameFake = faker.name.findName()
+    const emailFake = faker.internet.email()
+    const httpRequest = {
+      body: {
+        name: nameFake,
+        email: emailFake,
+        password: passFake,
+        passwordConfirmation: passFake
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse?.statusCode).toBe(200)
+    expect(httpResponse?.body).toEqual(makeFakeAccount)
   })
 })
