@@ -1,7 +1,6 @@
 import faker from 'faker'
-import { AddAccountModel } from '../../../domain/usecases/add-account'
-import { Encrypter } from '../../protocols/encrypter'
-import { DbAddAccount } from '../db-add-account'
+import { AddAccountModel, Encrypter } from './db-add-account-protocols'
+import { DbAddAccount } from './db-add-account'
 
 const makeEncrypterStub = (): Encrypter => {
   class EncrypterStub implements Encrypter {
