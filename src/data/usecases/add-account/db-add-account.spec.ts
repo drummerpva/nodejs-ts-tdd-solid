@@ -36,9 +36,9 @@ describe('DbAddAccount UseCase', () => {
   })
   test('Should throw if Encrypter throws', async () => {
     const { encrypterStub, sut } = makeSut()
-    jest
-      .spyOn(encrypterStub, 'encrypt')
-      .mockReturnValueOnce(Promise.reject(new Error()))
+    jest.spyOn(encrypterStub, 'encrypt').mockImplementationOnce(async () => {
+      return await Promise.reject(new Error())
+    })
     const passwordFake = faker.internet.password()
     const accountData: AddAccountModel = {
       name: faker.name.findName(),
