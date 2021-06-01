@@ -59,11 +59,10 @@ describe('DbAddAccount UseCase', () => {
     jest
       .spyOn(encrypterStub, 'encrypt')
       .mockReturnValueOnce(Promise.reject(new Error()))
-    const passwordFake = faker.internet.password()
     const accountData: AddAccountModel = {
       name: faker.name.findName(),
       email: faker.internet.email(),
-      password: passwordFake
+      password: faker.internet.password()
     }
     const promise = sut.add(accountData)
     await expect(promise).rejects.toThrow()
@@ -81,5 +80,18 @@ describe('DbAddAccount UseCase', () => {
       ...accountData,
       password: hashedPasswordFake
     })
+  })
+  test('Should throw if AddACcountRepository throws', async () => {
+    const { addAccountRepositoryStub, sut } = makeSut()
+    jest
+      .spyOn(addAccountRepositoryStub, 'add')
+      .mockReturnValueOnce(Promise.reject(new Error()))
+    const accountData: AddAccountModel = {
+      name: faker.name.findName(),
+      email: faker.internet.email(),
+      password: faker.internet.password()
+    }
+    const promise = sut.add(accountData)
+    await expect(promise).rejects.toThrow()
   })
 })
