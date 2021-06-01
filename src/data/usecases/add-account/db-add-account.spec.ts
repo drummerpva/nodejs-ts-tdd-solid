@@ -12,6 +12,11 @@ const fakeAccount: AccountModel = {
   name: faker.name.findName(),
   email: faker.internet.email()
 }
+const addAccountDataFake: AddAccountModel = {
+  name: faker.name.findName(),
+  email: faker.internet.email(),
+  password: faker.internet.password()
+}
 const hashedPasswordFake = faker.datatype.uuid()
 const makeEncrypterStub = (): Encrypter => {
   class EncrypterStub implements Encrypter {
@@ -46,11 +51,9 @@ describe('DbAddAccount UseCase', () => {
     const { encrypterStub, sut } = makeSut()
     const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
     const passwordFake = faker.internet.password()
-    const accountData: AddAccountModel = {
-      name: faker.name.findName(),
-      email: faker.internet.email(),
+    const accountData: AddAccountModel = Object.assign({}, addAccountDataFake, {
       password: passwordFake
-    }
+    })
     await sut.add(accountData)
     expect(encryptSpy).toHaveBeenCalledWith(passwordFake)
   })
@@ -59,25 +62,15 @@ describe('DbAddAccount UseCase', () => {
     jest
       .spyOn(encrypterStub, 'encrypt')
       .mockReturnValueOnce(Promise.reject(new Error()))
-    const accountData: AddAccountModel = {
-      name: faker.name.findName(),
-      email: faker.internet.email(),
-      password: faker.internet.password()
-    }
-    const promise = sut.add(accountData)
+    const promise = sut.add(addAccountDataFake)
     await expect(promise).rejects.toThrow()
   })
   test('Should call AddAccountRepository with correct values', async () => {
     const { addAccountRepositoryStub, sut } = makeSut()
     const addSpy = jest.spyOn(addAccountRepositoryStub, 'add')
-    const accountData: AddAccountModel = {
-      name: faker.name.findName(),
-      email: faker.internet.email(),
-      password: faker.internet.password()
-    }
-    await sut.add(accountData)
+    await sut.add(addAccountDataFake)
     expect(addSpy).toHaveBeenCalledWith({
-      ...accountData,
+      ...addAccountDataFake,
       password: hashedPasswordFake
     })
   })
@@ -86,12 +79,7 @@ describe('DbAddAccount UseCase', () => {
     jest
       .spyOn(addAccountRepositoryStub, 'add')
       .mockReturnValueOnce(Promise.reject(new Error()))
-    const accountData: AddAccountModel = {
-      name: faker.name.findName(),
-      email: faker.internet.email(),
-      password: faker.internet.password()
-    }
-    const promise = sut.add(accountData)
+    const promise = sut.add(addAccountDataFake)
     await expect(promise).rejects.toThrow()
   })
 })
