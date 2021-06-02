@@ -35,4 +35,12 @@ describe('BCrypt Adaper', () => {
     const hash = await sut.encrypt(faker.internet.password())
     expect(hash).toBe(hashFake)
   })
+  test('Should trows if bcrypt throws', async () => {
+    const sut = makeSut()
+    jest
+      .spyOn(bcrypt, 'hash')
+      .mockImplementationOnce(async () => await Promise.reject(new Error()))
+    const promise = sut.encrypt(faker.internet.password())
+    await expect(promise).rejects.toThrow()
+  })
 })
