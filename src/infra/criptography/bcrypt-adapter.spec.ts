@@ -2,6 +2,13 @@ import faker from 'faker'
 import bcrypt from 'bcrypt'
 import { BcryptAdapter } from './bcrypt-adapter'
 
+const hashFake = faker.datatype.uuid()
+jest.mock('bcrypt', () => ({
+  async hash(): Promise<string> {
+    return hashFake
+  }
+}))
+
 const makeSut = (salt: number | string): BcryptAdapter => {
   const sut = new BcryptAdapter(salt)
   return sut
@@ -28,6 +35,6 @@ describe('BCrypt Adaper', () => {
     const salt = 12
     const sut = makeSut(salt)
     const hash = await sut.encrypt(faker.internet.password())
-    expect(hash).toBeTruthy()
+    expect(hash).toBe(hashFake)
   })
 })
