@@ -4,7 +4,7 @@ import request from 'supertest'
 import app from '../config/app'
 
 describe('Body Parser Middleware', () => {
-  test('', async () => {
+  test('Should transform body in json', async () => {
     const fakeEndpoint = '/test_body_parser'
     app.post(fakeEndpoint, (req: Request, res: Response) => {
       res.send(req.body)
