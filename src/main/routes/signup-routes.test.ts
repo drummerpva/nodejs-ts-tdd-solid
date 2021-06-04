@@ -21,7 +21,7 @@ describe('SignUp Routes', () => {
       name: faker.name.findName(),
       email: faker.internet.email(),
       password: passwordFake,
-      passowrdConfirmation: passwordFake
+      passwordConfirmation: passwordFake
     }
     await request(app).post(fakeEndpoint).send(accountDataFake).expect(200)
   })
