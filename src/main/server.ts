@@ -1,2 +1,2 @@
 import app from './config/app'
-app.listen(5050, () => console.log(`Server running att http://localhost:5050`))
+app.listen(3000, () => console.log(`Server running att http://localhost:3000`))
